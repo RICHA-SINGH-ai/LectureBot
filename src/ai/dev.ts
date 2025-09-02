@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
-config({ path: './src/.env.local' });
+config({ path: './.env.local' });
 
 import '@/ai/flows/lecture-data-retrieval.ts';
