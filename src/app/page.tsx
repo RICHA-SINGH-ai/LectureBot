@@ -31,7 +31,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="relative p-2 rounded-full">
               <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10 animate-pulse-slow"></div>
-              <BookOpenCheck className="w-8 h-8 text-primary-foreground" />
+              <BookOpenCheck className="w-8 h-8 text-black dark:text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold font-headline text-primary">{content[language].title}</h1>
