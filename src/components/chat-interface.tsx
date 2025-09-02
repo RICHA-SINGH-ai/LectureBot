@@ -1,6 +1,8 @@
 
 "use client";
 
+// Yeh component chat ka pura UI aur logic handle karta hai.
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Bot, Loader2, Send, User } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -21,16 +23,19 @@ import { Badge } from "./ui/badge";
 import type { Language } from "@/app/page";
 import { NotificationReminder } from "./notification-reminder";
 
+// Form validation ke liye schema. Query empty nahi ho sakti.
 const chatFormSchema = z.object({
   query: z.string().min(1, { message: "Message cannot be empty." }),
 });
 
+// Har message ka structure kaisa hoga.
 type Message = {
   id: string;
   sender: "user" | "bot";
   content: React.ReactNode;
 };
 
+// Start mein dikhane ke liye example prompts.
 const examplePrompts = {
   en: [
     "What is today's schedule for section A?",
@@ -44,6 +49,7 @@ const examplePrompts = {
   ]
 };
 
+// UI ke text, language ke hisaab se.
 const uiContent = {
   en: {
     intro: "Hello! I am LectureBot. How can I help you with your schedule today? You can ask me in English or Hindi.",
@@ -58,16 +64,21 @@ const uiContent = {
 }
 
 export default function ChatInterface({ language }: { language: Language }) {
+  // Sabhi messages ko store karne ke liye state.
   const [messages, setMessages] = useState<Message[]>([]);
+  // Loading state handle karne ke liye. Jab AI se response aa raha ho, isPending true hoga.
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  // Scroll ko automatically neeche karne ke liye ref.
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // React Hook Form ka istemal form management ke liye.
   const form = useForm<z.infer<typeof chatFormSchema>>({
     resolver: zodResolver(chatFormSchema),
     defaultValues: { query: "" },
   });
 
+  // Jab bhi language change ho, intro message update karo.
   useEffect(() => {
     setMessages([
       {
@@ -78,10 +89,12 @@ export default function ChatInterface({ language }: { language: Language }) {
     ]);
   }, [language]);
 
+  // Jab bhi naya message aaye ya AI soch raha ho, to neeche scroll karo.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isPending]);
 
+  // Jab user form submit karega, yeh function call hoga.
   const handleQuerySubmit = (data: z.infer<typeof chatFormSchema>) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -92,10 +105,13 @@ export default function ChatInterface({ language }: { language: Language }) {
     setMessages(prev => [...prev, userMessage]);
     form.reset();
 
+    // `startTransition` ke andar API call karne se UI block nahi hota.
     startTransition(async () => {
+      // Server action ko call karke AI se response manga ja raha hai.
       const result = await getLectureScheduleAction({ query: data.query, language });
       
       if (result.success && result.response) {
+        // Agar response successful hai, toh bot ka message display karo.
         const botResponse = result.response;
         const botMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -103,6 +119,7 @@ export default function ChatInterface({ language }: { language: Language }) {
           content: (
             <>
               <p>{botResponse.response}</p>
+              {/* Agar schedule data hai, toh use ScheduleDisplay component se dikhao. */}
               {botResponse.schedule && botResponse.schedule.length > 0 && (
                 <div className="mt-4">
                   <ScheduleDisplay data={botResponse as Required<LectureQueryOutput>} />
@@ -113,17 +130,18 @@ export default function ChatInterface({ language }: { language: Language }) {
         };
         setMessages(prev => [...prev, botMessage]);
       } else {
+        // Agar error aaya, toh toast notification dikhao.
         toast({
           variant: "destructive",
           title: "Error",
           description: result.error || "An unknown error occurred.",
         });
-        // Optionally remove the user's message if the API call fails
         setMessages(prev => prev.filter(m => m.id !== userMessage.id));
       }
     });
   };
 
+  // Jab user example prompt par click karta hai.
   const handleExamplePromptClick = (prompt: string) => {
     form.setValue("query", prompt);
     form.handleSubmit(handleQuerySubmit)();
@@ -131,7 +149,10 @@ export default function ChatInterface({ language }: { language: Language }) {
   
   return (
     <div className="flex flex-col flex-1 bg-card rounded-b-lg overflow-hidden">
+      {/* Notification reminder component */}
       <NotificationReminder />
+      
+      {/* Chat messages ka area */}
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-6">
           {messages.map((message) => (
@@ -168,6 +189,7 @@ export default function ChatInterface({ language }: { language: Language }) {
               )}
             </div>
           ))}
+          {/* Jab AI response generate kar raha ho, toh "Thinking..." indicator dikhao. */}
           {isPending && (
              <div className="flex items-start gap-3 animate-in fade-in duration-300">
                <Avatar className="w-8 h-8 border-2 border-primary shrink-0">
@@ -184,7 +206,10 @@ export default function ChatInterface({ language }: { language: Language }) {
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
+
+      {/* Input area, jahan user type karta hai */}
       <div className="p-4 bg-card border-t">
+         {/* Agar chat shuru nahi hui hai, toh example prompts dikhao. */}
          {!isPending && messages.length <= 2 && (
             <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
                 {examplePrompts[language].map((prompt, i) => (

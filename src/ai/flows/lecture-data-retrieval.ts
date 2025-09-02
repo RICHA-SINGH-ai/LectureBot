@@ -8,16 +8,20 @@
  * - LectureQueryOutput - The return type for the getLectureData function.
  */
 
+// Yeh file Genkit AI aur schedule data ka istemal karke student ke lecture-related sawalon ka jawab deti hai.
+
 import { scheduleData } from '@/lib/schedule-data';
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
+// Yeh define karta hai ki user se input mein kya-kya aayega.
 const LectureQueryInputSchema = z.object({
   query: z.string().describe('The user query in English or Hindi about their lecture schedule. This could be a new question or a response to a clarifying question from the assistant.'),
   language: z.enum(['en', 'hi']).default('en').describe('The language for the response.'),
 });
 export type LectureQueryInput = z.infer<typeof LectureQueryInputSchema>;
 
+// Yeh lecture ka structure define karta hai. Har lecture mein yeh details hongi.
 const LectureSchema = z.object({
   title: z.string().describe('The title of the lecture.'),
   section: z.string().describe('The section for the lecture (A or B).'),
@@ -27,16 +31,19 @@ const LectureSchema = z.object({
   day: z.string().describe("The day of the week for the lecture."),
 });
 
+// Yeh define karta hai ki AI se output mein kya-kya aayega.
 const LectureQueryOutputSchema = z.object({
   response: z.string().describe('A conversational response to the user. It could be the answer, a clarifying question if the query is ambiguous (e.g., asking for section A or B), or a statement that the requested information could not be found.'),
   schedule: z.array(LectureSchema).optional().describe('A list of lectures matching the query. This should only be populated if the query was specific enough to yield a schedule result.'),
 });
 export type LectureQueryOutput = z.infer<typeof LectureQueryOutputSchema>;
 
+// Yeh main function hai jise frontend call karega.
 export async function getLectureData(input: LectureQueryInput): Promise<LectureQueryOutput> {
   return lectureDataFlow(input);
 }
 
+// Yahan hum AI (Gemini) ke liye prompt (instructions) define kar rahe hain.
 const lectureDataPrompt = ai.definePrompt({
   name: 'lectureDataPrompt',
   input: { schema: LectureQueryInputSchema },
@@ -76,6 +83,7 @@ const lectureDataPrompt = ai.definePrompt({
 });
 
 
+// Yeh Genkit flow define karta hai, jo prompt ko run karega.
 const lectureDataFlow = ai.defineFlow(
   {
     name: 'lectureDataFlow',
@@ -83,7 +91,7 @@ const lectureDataFlow = ai.defineFlow(
     outputSchema: LectureQueryOutputSchema,
   },
   async (input) => {
-    // Forcing Gemini 2.5 Flash as it seems to follow instructions better for this task.
+    // Hum yahan Gemini 2.5 Flash model ka istemal kar rahe hain, kyunki yeh instructions aache se follow karta hai.
     const { output } = await lectureDataPrompt(input, { model: 'googleai/gemini-2.5-flash' });
     return output!;
   }

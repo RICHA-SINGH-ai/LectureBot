@@ -1,6 +1,8 @@
 
 'use client';
 
+// Yeh component agle lecture ke liye ek reminder dikhata hai.
+
 import { useState, useEffect } from 'react';
 import { scheduleData } from '@/lib/schedule-data';
 import { Bell, Clock, Calendar, Book, Building, User, Users } from 'lucide-react';
@@ -8,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 
+// Lecture ka structure define kar rahe hain.
 interface Lecture {
   day: string;
   section: 'A' | 'B';
@@ -19,6 +22,7 @@ interface Lecture {
   startTimeInMinutes: number;
 }
 
+// Yeh function lecture shuru hone mein kitna time bacha hai, yeh calculate karta hai.
 const calculateTimeLeft = (lectureStartTimeInMinutes: number) => {
     const now = new Date();
     const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
@@ -44,11 +48,12 @@ const calculateTimeLeft = (lectureStartTimeInMinutes: number) => {
     return timeLeftStr.trim();
 };
 
+// Yeh function time string (e.g., "10:00 AM") ko minutes mein convert karta hai.
 const parseTimeToMinutes = (timeStr: string): number => {
     const [time, period] = timeStr.split(' ');
     let [hours, minutes] = time.split(':').map(Number);
   
-    // Convert to 24-hour format if period (AM/PM) is provided
+    // AM/PM ke hisab se 24-hour format mein convert karna.
     if (period) {
       if (period.toLowerCase() === 'pm' && hours < 12) {
         hours += 12;
@@ -58,7 +63,7 @@ const parseTimeToMinutes = (timeStr: string): number => {
       }
     }
     
-    // Fallback for times like '01:00' which are afternoon in the schedule but lack AM/PM
+    // Kuch time jaise '01:00' jo schedule mein afternoon ke hain but AM/PM nahi hai.
     if (!period && hours >= 1 && hours <= 5) {
         hours += 12;
     }
@@ -67,16 +72,21 @@ const parseTimeToMinutes = (timeStr: string): number => {
   };
 
 export function NotificationReminder() {
+  // State to store the next lecture.
   const [nextLecture, setNextLecture] = useState<Lecture | null>(null);
+  // State to store the time left.
   const [timeLeft, setTimeLeft] = useState<string>('');
+  // State to control visibility of the reminder.
   const [isVisible, setIsVisible] = useState(false);
 
+  // Yeh useEffect component mount hone par chalta hai aur agla lecture find karta hai.
   useEffect(() => {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const now = new Date();
     const currentDay = days[now.getDay()];
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes from midnight
+    const currentTime = now.getHours() * 60 + now.getMinutes(); 
 
+    // Aaj ke lectures ko filter karke sort karna.
     const todaysLectures = scheduleData.schedule
       .filter((lec) => lec.day === currentDay)
       .map((lec) => {
@@ -86,8 +96,10 @@ export function NotificationReminder() {
       })
       .sort((a, b) => a.startTimeInMinutes - b.startTimeInMinutes);
 
+    // Abhi ke time ke baad ka pehla lecture find karna.
     const upcomingLecture = todaysLectures.find(lec => lec.startTimeInMinutes > currentTime);
 
+    // Agar upcoming lecture milta hai, to state update karna.
     if (upcomingLecture) {
       setNextLecture(upcomingLecture);
       setTimeLeft(calculateTimeLeft(upcomingLecture.startTimeInMinutes));
@@ -98,20 +110,23 @@ export function NotificationReminder() {
     }
   }, []);
 
+  // Yeh useEffect har minute time left ko update karta hai.
   useEffect(() => {
     if (!nextLecture) return;
 
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft(nextLecture.startTimeInMinutes));
-    }, 60000); // Update every minute
+    }, 60000); // Har 60 seconds mein update.
 
     return () => clearInterval(timer);
   }, [nextLecture]);
 
+  // Agar koi agla lecture nahi hai, toh kuch bhi render mat karo.
   if (!nextLecture || !isVisible) {
     return null;
   }
 
+  // Reminder bar UI, jo click karne par dialog kholta hai.
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -143,6 +158,7 @@ export function NotificationReminder() {
           </div>
         </div>
       </DialogTrigger>
+      {/* Yeh dialog/popup hai jo reminder pe click karne par dikhta hai. */}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
