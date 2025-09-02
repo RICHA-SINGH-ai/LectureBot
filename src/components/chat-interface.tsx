@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ScheduleDisplay } from "./schedule-display";
 import { Badge } from "./ui/badge";
+import type { Language } from "@/app/page";
 
 const chatFormSchema = z.object({
   query: z.string().min(1, { message: "Message cannot be empty." }),
@@ -28,13 +30,33 @@ type Message = {
   content: React.ReactNode;
 };
 
-const examplePrompts = [
+const examplePrompts = {
+  en: [
     "What is today's schedule for section A?",
-    "MMP mam ka lecture kab hai?",
+    "When is MMP mam's lecture?",
     "MCA-3003",
-];
+  ],
+  hi: [
+    "आज सेक्शन A का शेड्यूल क्या है?",
+    "MMP मैम का लेक्चर कब है?",
+    "MCA-3003",
+  ]
+};
 
-export default function ChatInterface() {
+const uiContent = {
+  en: {
+    intro: "Hello! I am LectureBot. How can I help you with your schedule today? You can ask me in English or Hindi.",
+    placeholder: "Ask about your lectures...",
+    thinking: "Thinking...",
+  },
+  hi: {
+    intro: "नमस्ते! मैं लेक्चरबॉट हूँ। मैं आज आपके शेड्यूल में कैसे मदद कर सकता हूँ? आप मुझसे अंग्रेजी या हिंदी में पूछ सकते हैं।",
+    placeholder: "अपने व्याख्यानों के बारे में पूछें...",
+    thinking: "सोच रहा हूँ...",
+  },
+}
+
+export default function ChatInterface({ language }: { language: Language }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -50,10 +72,10 @@ export default function ChatInterface() {
       {
         id: "intro",
         sender: "bot",
-        content: <p>Hello! I am LectureBot. How can I help you with your schedule today? You can ask me in English or Hindi.</p>,
+        content: <p>{uiContent[language].intro}</p>,
       },
     ]);
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -70,7 +92,7 @@ export default function ChatInterface() {
     form.reset();
 
     startTransition(async () => {
-      const result = await getLectureScheduleAction({ query: data.query });
+      const result = await getLectureScheduleAction({ query: data.query, language });
       
       if (result.success && result.response) {
         const botResponse = result.response;
@@ -153,7 +175,7 @@ export default function ChatInterface() {
                </Avatar>
                <div className="bg-muted rounded-xl p-3 shadow-sm flex items-center space-x-2">
                   <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                  <span className="text-muted-foreground italic">Thinking...</span>
+                  <span className="text-muted-foreground italic">{uiContent[language].thinking}</span>
                </div>
              </div>
           )}
@@ -163,7 +185,7 @@ export default function ChatInterface() {
       <div className="p-4 bg-card border-t">
          {!isPending && messages.length <= 2 && (
             <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
-                {examplePrompts.map((prompt, i) => (
+                {examplePrompts[language].map((prompt, i) => (
                     <Badge 
                         key={i} 
                         variant="outline" 
@@ -183,7 +205,7 @@ export default function ChatInterface() {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <Input placeholder="Ask about your lectures..." {...field} disabled={isPending} />
+                    <Input placeholder={uiContent[language].placeholder} {...field} disabled={isPending} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

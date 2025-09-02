@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent that can query a student's lecture schedule based on the real timetable.
@@ -13,6 +14,7 @@ import { z } from 'zod';
 
 const LectureQueryInputSchema = z.object({
   query: z.string().describe('The user query in English or Hindi about their lecture schedule. This could be a new question or a response to a clarifying question from the assistant.'),
+  language: z.enum(['en', 'hi']).default('en').describe('The language for the response.'),
 });
 export type LectureQueryInput = z.infer<typeof LectureQueryInputSchema>;
 
@@ -39,7 +41,9 @@ const lectureDataPrompt = ai.definePrompt({
   name: 'lectureDataPrompt',
   input: { schema: LectureQueryInputSchema },
   output: { schema: LectureQueryOutputSchema },
-  prompt: `You are a helpful college assistant chatbot. Your primary role is to answer student queries about their lecture schedule, courses, and professors based on the provided JSON dataset. You must handle queries in both English and Hindi.
+  prompt: `You are a helpful college assistant chatbot. Your primary role is to answer student queries about their lecture schedule, courses, and professors based on the provided JSON dataset. 
+  
+  **IMPORTANT: You MUST respond in the language specified by the 'language' field: {{{language}}}. 'en' for English, 'hi' for Hindi.**
 
   **Crucial Information: Today is ${new Date().toLocaleString('en-US', { weekday: 'long' })}.** When a user asks for "today's schedule", "aaj ka lecture", or any similar phrase, you MUST use this information and not ask them for the day.
 
