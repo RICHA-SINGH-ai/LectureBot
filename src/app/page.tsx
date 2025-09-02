@@ -2,7 +2,6 @@
 'use client';
 
 import ChatInterface from '@/components/chat-interface';
-import { Bot } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -31,7 +30,23 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="relative p-2 rounded-full text-primary-foreground">
               <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10 animate-pulse-slow"></div>
-              <Bot className="w-8 h-8" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-8 h-8"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="m22 6-10 5-10-5"></path>
+                <path d="m6 12 6 3 6-3"></path>
+                <path d="M12 18v-5"></path>
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold font-headline text-primary">{content[language].title}</h1>
