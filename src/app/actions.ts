@@ -12,10 +12,10 @@ export async function getLectureScheduleAction(input: LectureDataInput) {
   try {
     const validatedInput = LectureDataInputSchema.parse(input);
     const result = await getLectureData(validatedInput);
-    if (!result.schedule) {
+    if (!result.schedule || result.schedule.length === 0) {
        return { success: false, error: 'The schedule is currently empty.' };
     }
-    return { success: true, schedule: result.schedule };
+    return { success: true, schedule: result };
   } catch (error) {
     console.error('Error fetching lecture data:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';

@@ -22,6 +22,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import type { LectureDataOutput } from "@/ai/flows/lecture-data-retrieval";
+import { ScheduleDisplay } from "./schedule-display";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -146,7 +148,7 @@ export default function ChatInterface() {
           {
             id: (Date.now() + 1).toString(),
             sender: "bot",
-            content: <pre className="whitespace-pre-wrap font-sans text-sm">{result.schedule}</pre>,
+            content: <ScheduleDisplay data={result.schedule as LectureDataOutput} />,
           },
         ]);
       } else {
