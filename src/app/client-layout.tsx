@@ -2,7 +2,6 @@
 'use client';
 
 import { ThemeProvider } from '@/components/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,8 +11,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
-      <Toaster />
+      <html lang="en" suppressHydrationWarning>
+        {children}
+      </html>
     </ThemeProvider>
   );
 }
