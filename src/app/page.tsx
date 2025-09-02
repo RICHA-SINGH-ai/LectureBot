@@ -40,7 +40,7 @@ export default function Home() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-8 h-8 text-primary-foreground"
+                className="w-8 h-8 text-foreground dark:text-white"
               >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
