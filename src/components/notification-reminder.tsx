@@ -12,7 +12,7 @@ interface Lecture {
   room: string;
   time: string;
   course: string;
-  professor: string[];
+  professor: string;
   title: string;
   startTimeInMinutes: number;
 }
@@ -22,6 +22,9 @@ const calculateTimeLeft = (lectureStartTimeInMinutes: number) => {
     const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
     const diffInMinutes = lectureStartTimeInMinutes - currentTimeInMinutes;
 
+    if (diffInMinutes <= 5 && diffInMinutes > 0) {
+        return "starting soon";
+    }
     if (diffInMinutes <= 0) {
         return "starting now";
     }
@@ -39,6 +42,27 @@ const calculateTimeLeft = (lectureStartTimeInMinutes: number) => {
     return timeLeftStr.trim();
 };
 
+const parseTimeToMinutes = (timeStr: string): number => {
+    const [time, period] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+  
+    // Convert to 24-hour format if period (AM/PM) is provided
+    if (period) {
+      if (period.toLowerCase() === 'pm' && hours < 12) {
+        hours += 12;
+      }
+      if (period.toLowerCase() === 'am' && hours === 12) { // Midnight case
+        hours = 0;
+      }
+    }
+    
+    // Fallback for times like '01:00' which are afternoon in the schedule
+    if (!period && hours >= 1 && hours <= 5) {
+        hours += 12;
+    }
+
+    return hours * 60 + minutes;
+  };
 
 export function NotificationReminder() {
   const [nextLecture, setNextLecture] = useState<Lecture | null>(null);
@@ -54,10 +78,8 @@ export function NotificationReminder() {
     const todaysLectures = scheduleData.schedule
       .filter((lec) => lec.day === currentDay)
       .map((lec) => {
-        const timeParts = lec.time.split(' - ')[0].split(':');
-        const startHour = parseInt(timeParts[0], 10);
-        const startMinute = parseInt(timeParts[1], 10);
-        const startTimeInMinutes = startHour * 60 + startMinute;
+        const startTimeStr = lec.time.split(' - ')[0];
+        const startTimeInMinutes = parseTimeToMinutes(startTimeStr);
         return { ...lec, startTimeInMinutes };
       })
       .sort((a, b) => a.startTimeInMinutes - b.startTimeInMinutes);
@@ -68,6 +90,9 @@ export function NotificationReminder() {
       setNextLecture(upcomingLecture);
       setTimeLeft(calculateTimeLeft(upcomingLecture.startTimeInMinutes));
       setIsVisible(true);
+    } else {
+      setIsVisible(false);
+      setNextLecture(null);
     }
   }, []);
 
@@ -108,7 +133,7 @@ export function NotificationReminder() {
                 <span>{nextLecture.time.split(' - ')[0]}</span>
             </div>
         </div>
-        <div className="ml-auto font-semibold text-accent">
+        <div className="font-semibold text-accent ml-auto sm:ml-0">
             {timeLeft}
         </div>
       </div>
