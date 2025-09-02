@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ScheduleDisplay } from "./schedule-display";
+import { Badge } from "./ui/badge";
 
 const chatFormSchema = z.object({
   query: z.string().min(1, { message: "Message cannot be empty." }),
@@ -26,6 +27,12 @@ type Message = {
   sender: "user" | "bot";
   content: React.ReactNode;
 };
+
+const examplePrompts = [
+    "What is today's schedule for section A?",
+    "MMP mam ka lecture kab hai?",
+    "MCA-3003",
+];
 
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -93,6 +100,11 @@ export default function ChatInterface() {
       }
     });
   };
+
+  const handleExamplePromptClick = (prompt: string) => {
+    form.setValue("query", prompt);
+    form.handleSubmit(handleQuerySubmit)();
+  };
   
   return (
     <div className="flex flex-col flex-1 bg-card rounded-b-lg overflow-hidden">
@@ -149,6 +161,20 @@ export default function ChatInterface() {
         </div>
       </ScrollArea>
       <div className="p-4 bg-card border-t">
+         {!isPending && messages.length <= 2 && (
+            <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
+                {examplePrompts.map((prompt, i) => (
+                    <Badge 
+                        key={i} 
+                        variant="outline" 
+                        className="cursor-pointer hover:bg-muted"
+                        onClick={() => handleExamplePromptClick(prompt)}
+                    >
+                        {prompt}
+                    </Badge>
+                ))}
+            </div>
+         )}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleQuerySubmit)} className="flex items-center gap-2">
             <FormField
