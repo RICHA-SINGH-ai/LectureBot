@@ -1,63 +1,75 @@
 'use server';
 /**
- * @fileOverview Fetches and formats lecture data based on student details.
+ * @fileOverview An AI agent that can query a student's lecture schedule based on the real timetable.
  *
- * - getLectureData - Retrieves and formats lecture information for a student.
- * - LectureDataInput - The input type for getLectureData, containing student details.
- * - LectureDataOutput - The output type, providing a formatted lecture schedule.
+ * - getLectureData - A function that handles the lecture schedule retrieval process.
+ * - LectureQueryInput - The input type for the getLectureData function.
+ * - LectureQueryOutput - The return type for the getLectureData function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { scheduleData } from '@/lib/schedule-data';
+import { ai } from '@/ai/genkit';
+import { z } from 'zod';
 
-const LectureDataInputSchema = z.object({
-  className: z.string().describe('The class name (e.g., MCA, MCA001).'),
-  name: z.string().describe('The name of the student.'),
+const LectureQueryInputSchema = z.object({
+  query: z.string().describe('The user query in English or Hindi about their lecture schedule.'),
 });
-export type LectureDataInput = z.infer<typeof LectureDataInputSchema>;
+export type LectureQueryInput = z.infer<typeof LectureQueryInputSchema>;
 
 const LectureSchema = z.object({
   title: z.string().describe('The title of the lecture.'),
-  floor: z.string().describe('The floor where the lecture is held.'),
+  section: z.string().describe('The section for the lecture (A or B).'),
   roomNo: z.string().describe('The room number for the lecture.'),
   professor: z.string().describe("The name of the professor giving the lecture."),
   time: z.string().describe("The time of the lecture (e.g., '10:00 AM - 11:30 AM')."),
-  status: z.string().describe("The status of the lecture (e.g., 'On Time', 'Delayed', 'Starts in 5 mins')."),
+  day: z.string().describe("The day of the week for the lecture."),
 });
 
-const LectureDataOutputSchema = z.object({
-  studentName: z.string().describe("The student's name for whom the schedule is."),
-  className: z.string().describe('The class name for the schedule.'),
-  schedule: z.array(LectureSchema).describe('A list of current lectures for the student.'),
+const LectureQueryOutputSchema = z.object({
+  response: z.string().describe('A conversational response to the user. It could be the answer, a clarifying question if the query is ambiguous (e.g., asking for section A or B), or a statement that the requested information could not be found.'),
+  schedule: z.array(LectureSchema).optional().describe('A list of lectures matching the query. This should only be populated if the query was specific enough to yield a result.'),
 });
-export type LectureDataOutput = z.infer<typeof LectureDataOutputSchema>;
+export type LectureQueryOutput = z.infer<typeof LectureQueryOutputSchema>;
 
-export async function getLectureData(input: LectureDataInput): Promise<LectureDataOutput> {
+export async function getLectureData(input: LectureQueryInput): Promise<LectureQueryOutput> {
   return lectureDataFlow(input);
 }
 
 const lectureDataPrompt = ai.definePrompt({
   name: 'lectureDataPrompt',
-  input: {schema: LectureDataInputSchema},
-  output: {schema: LectureDataOutputSchema},
-  prompt: `You are a helpful assistant that retrieves lecture schedules for students.
+  input: { schema: LectureQueryInputSchema },
+  output: { schema: LectureQueryOutputSchema },
+  prompt: `You are a helpful college assistant chatbot. Your task is to answer student queries about their lecture schedule based on a provided JSON dataset. You must handle queries in both English and Hindi.
 
-  Based on the student's name and class name, fetch their current lecture schedule. For the purpose of this demo, generate a realistic but fictional schedule if one does not exist. The schedule should contain 2-3 lectures.
+  **Today is ${new Date().toLocaleString('en-US', { weekday: 'long' })}.**
 
-  Student Name: {{{name}}}
-  Class Name: {{{className}}}
+  **Timetable Data:**
+  \`\`\`json
+  ${JSON.stringify(scheduleData, null, 2)}
+  \`\`\`
 
-  Return the schedule as a structured JSON object. Include the student's name, class name, and a list of their lectures with title, floor, roomNo, professor, time, and a status (e.g., 'On Time', 'Delayed', 'Starts in 5 mins').`,
+  **Instructions:**
+  1.  Analyze the user's query: \`{{{query}}}\`
+  2.  Examine the timetable data to find matching lectures. The query might mention a professor's name/initials (e.g., "Shashi mam", "MMP"), a course name, a course code, a day, or just ask for "today's lectures".
+  3.  **Handle Ambiguity:** If a query is ambiguous (e.g., a professor teaches multiple sections, or the user asks for a schedule on a day with different sections), you MUST ask a clarifying question. For example, if the user asks for "MMP mam's lecture" and she teaches both sections A and B, your response should be: "Mrs. Mamta M. Panda teaches lectures for both Section A and B. Which section's schedule would you like to see?"
+  4.  **Formulate a Response:**
+      *   If you have a clear answer, populate the \`schedule\` array with the lecture details and provide a friendly confirmation in the \`response\` field. For example: "Sure, here is the schedule for Section A on Monday."
+      *   If you need clarification, provide ONLY the clarifying question in the \`response\` field and leave the \`schedule\` array empty.
+      *   If you cannot find any relevant lectures after a thorough search, respond politely in the \`response\` field, stating that you couldn't find the information. For example: "I couldn't find any lectures matching your request."
+  5.  Your primary function is to query the data. Do not make up information. Base all schedule responses strictly on the JSON data provided.
+  `,
 });
+
 
 const lectureDataFlow = ai.defineFlow(
   {
     name: 'lectureDataFlow',
-    inputSchema: LectureDataInputSchema,
-    outputSchema: LectureDataOutputSchema,
+    inputSchema: LectureQueryInputSchema,
+    outputSchema: LectureQueryOutputSchema,
   },
-  async input => {
-    const {output} = await lectureDataPrompt(input);
+  async (input) => {
+    // Forcing Gemini 2.5 Flash as it seems to follow instructions better for this task.
+    const { output } = await lectureDataPrompt(input, { model: 'googleai/gemini-2.5-flash' });
     return output!;
   }
 );

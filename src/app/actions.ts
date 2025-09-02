@@ -1,21 +1,11 @@
 'use server';
 
-import { getLectureData, LectureDataInput } from '@/ai/flows/lecture-data-retrieval';
-import { z } from 'zod';
+import { getLectureData, LectureQueryInput } from '@/ai/flows/lecture-data-retrieval';
 
-const LectureDataInputSchema = z.object({
-  className: z.string().describe('The class name (e.g., MCA, MCA001).'),
-  name: z.string().describe('The name of the student.'),
-});
-
-export async function getLectureScheduleAction(input: LectureDataInput) {
+export async function getLectureScheduleAction(input: LectureQueryInput) {
   try {
-    const validatedInput = LectureDataInputSchema.parse(input);
-    const result = await getLectureData(validatedInput);
-    if (!result.schedule || result.schedule.length === 0) {
-       return { success: false, error: 'The schedule is currently empty.' };
-    }
-    return { success: true, schedule: result };
+    const result = await getLectureData(input);
+    return { success: true, response: result };
   } catch (error) {
     console.error('Error fetching lecture data:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
