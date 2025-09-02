@@ -4,8 +4,8 @@ import { getLectureData, LectureDataInput } from '@/ai/flows/lecture-data-retrie
 import { z } from 'zod';
 
 const LectureDataInputSchema = z.object({
+  className: z.string().describe('The class name (e.g., MCA, MCA001).'),
   name: z.string().describe('The name of the student.'),
-  id: z.string().describe('The ID of the student.'),
 });
 
 export async function getLectureScheduleAction(input: LectureDataInput) {
