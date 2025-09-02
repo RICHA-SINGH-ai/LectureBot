@@ -6,6 +6,7 @@ import { Bot } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export type Language = 'en' | 'hi';
 
@@ -37,23 +38,26 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">{content[language].subtitle}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1 border rounded-md p-1">
-            <Button
-              size="sm"
-              variant={language === 'en' ? 'secondary' : 'ghost'}
-              className={cn("h-7 px-2", language === 'en' ? 'shadow-sm' : '')}
-              onClick={() => setLanguage('en')}
-            >
-              EN
-            </Button>
-            <Button
-              size="sm"
-              variant={language === 'hi' ? 'secondary' : 'ghost'}
-              className={cn("h-7 px-2", language === 'hi' ? 'shadow-sm' : '')}
-              onClick={() => setLanguage('hi')}
-            >
-              HI
-            </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 border rounded-md p-1">
+              <Button
+                size="sm"
+                variant={language === 'en' ? 'secondary' : 'ghost'}
+                className={cn("h-7 px-2", language === 'en' ? 'shadow-sm' : '')}
+                onClick={() => setLanguage('en')}
+              >
+                EN
+              </Button>
+              <Button
+                size="sm"
+                variant={language === 'hi' ? 'secondary' : 'ghost'}
+                className={cn("h-7 px-2", language === 'hi' ? 'shadow-sm' : '')}
+                onClick={() => setLanguage('hi')}
+              >
+                HI
+              </Button>
+            </div>
+            <ThemeToggle />
           </div>
         </header>
         <ChatInterface language={language} />
