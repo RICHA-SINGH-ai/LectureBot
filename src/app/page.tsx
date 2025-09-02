@@ -3,10 +3,11 @@ import { Bot } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen bg-background items-center justify-center p-2 sm:p-4">
-      <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg">
+    <div className="flex min-h-screen bg-secondary items-center justify-center p-2 sm:p-4">
+      <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background">
         <header className="flex items-center gap-4 p-4 border-b bg-card rounded-t-lg">
-          <div className="p-2 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20">
+          <div className="relative p-2 rounded-full text-primary-foreground">
+             <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10"></div>
             <Bot className="w-8 h-8" />
           </div>
           <div>
