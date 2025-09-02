@@ -7,7 +7,7 @@ export default function Home() {
       <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background">
         <header className="flex items-center gap-4 p-4 border-b bg-card rounded-t-lg">
           <div className="relative p-2 rounded-full text-primary-foreground">
-             <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10"></div>
+             <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10 animate-pulse-slow"></div>
             <Bot className="w-8 h-8" />
           </div>
           <div>
