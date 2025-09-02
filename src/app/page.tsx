@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen bg-secondary items-center justify-center p-2 sm:p-4">
-      <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background">
+      <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background gradient-border-bg">
         <header className="flex items-center justify-between gap-4 p-4 border-b bg-card rounded-t-lg">
           <div className="flex items-center gap-4">
             <div className="relative p-2 rounded-full text-primary-foreground">
@@ -37,15 +37,14 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-8 h-8 text-primary"
+                className="w-8 h-8 text-primary-foreground"
               >
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                <path d="m22 6-10 5-10-5"></path>
-                <path d="m6 12 6 3 6-3"></path>
-                <path d="M12 18v-5"></path>
+                <path d="m10 7-2 5 2 5"></path>
+                <path d="m14 7 2 5-2 5"></path>
               </svg>
             </div>
             <div>
