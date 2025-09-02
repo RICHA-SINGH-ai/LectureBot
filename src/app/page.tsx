@@ -33,7 +33,7 @@ export default function Home() {
     // Yeh main container hai jo screen ke center mein hai.
     <div className="flex min-h-screen bg-secondary items-center justify-center p-2 sm:p-4">
       {/* Yeh chat window ka container hai, jisme gradient border aur fade-in animation hai. */}
-      <div className="w-full max-w-2xl min-h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background gradient-border-bg animate-in fade-in duration-500">
+      <div className="w-full max-w-2xl h-[95vh] flex flex-col shadow-2xl rounded-lg bg-background gradient-border-bg animate-in fade-in duration-500">
         
         {/* Header section jisme logo, title, aur language/theme toggles hain. */}
         <header className="flex items-center justify-between gap-4 p-4 border-b bg-card rounded-t-lg">
