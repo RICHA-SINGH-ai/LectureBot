@@ -107,8 +107,12 @@ export default function ChatInterface({ language }: { language: Language }) {
 
     // `startTransition` ke andar API call karne se UI block nahi hota.
     startTransition(async () => {
+      // Timezone bug ko fix karne ke liye client-side se current day bhej rahe hain.
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const currentDay = days[new Date().getDay()];
+
       // Server action ko call karke AI se response manga ja raha hai.
-      const result = await getLectureScheduleAction({ query: data.query, language });
+      const result = await getLectureScheduleAction({ query: data.query, language, currentDay });
       
       if (result.success && result.response) {
         // Agar response successful hai, toh bot ka message display karo.

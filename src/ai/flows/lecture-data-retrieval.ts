@@ -18,6 +18,7 @@ import { z } from 'zod';
 const LectureQueryInputSchema = z.object({
   query: z.string().describe('The user query in English or Hindi about their lecture schedule. This could be a new question or a response to a clarifying question from the assistant.'),
   language: z.enum(['en', 'hi']).default('en').describe('The language for the response.'),
+  currentDay: z.string().describe("The current day of the week as determined by the client's browser to avoid timezone issues."),
 });
 export type LectureQueryInput = z.infer<typeof LectureQueryInputSchema>;
 
@@ -52,7 +53,7 @@ const lectureDataPrompt = ai.definePrompt({
   
   **IMPORTANT: You MUST respond in the language specified by the 'language' field: {{{language}}}. 'en' for English, 'hi' for Hindi.**
 
-  **Crucial Information: Today is ${new Date().toLocaleString('en-US', { weekday: 'long' })}.** When a user asks for "today's schedule", "aaj ka lecture", or any similar phrase, you MUST use this information and not ask them for the day.
+  **Crucial Information: Today is {{{currentDay}}}.** When a user asks for "today's schedule", "aaj ka lecture", or any similar phrase, you MUST use this information and not ask them for the day.
 
   **Timetable and Course Data:**
   \`\`\`json
