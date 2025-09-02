@@ -153,59 +153,61 @@ export default function ChatInterface({ language }: { language: Language }) {
       <NotificationReminder />
       
       {/* Chat messages ka area */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-6">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={cn(
-                "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500",
-                message.sender === "user" ? "justify-end" : ""
-              )}
-            >
-              {message.sender === "bot" && (
-                <Avatar className="w-8 h-8 border-2 border-primary shrink-0">
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    <Bot size={18} />
-                  </AvatarFallback>
-                </Avatar>
-              )}
+      <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="h-full">
+          <div className="space-y-6 p-4">
+            {messages.map((message) => (
               <div
+                key={message.id}
                 className={cn(
-                  "max-w-[85%] sm:max-w-[75%] rounded-xl p-3 shadow-sm",
-                  message.sender === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground"
+                  "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500",
+                  message.sender === "user" ? "justify-end" : ""
                 )}
               >
-                {message.content}
+                {message.sender === "bot" && (
+                  <Avatar className="w-8 h-8 border-2 border-primary shrink-0">
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      <Bot size={18} />
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                <div
+                  className={cn(
+                    "max-w-[85%] sm:max-w-[75%] rounded-xl p-3 shadow-sm",
+                    message.sender === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  )}
+                >
+                  {message.content}
+                </div>
+                {message.sender === "user" && (
+                  <Avatar className="w-8 h-8 border-2 border-accent shrink-0">
+                     <AvatarFallback className="bg-accent text-accent-foreground">
+                      <User size={18} />
+                    </AvatarFallback>
+                  </Avatar>
+                )}
               </div>
-              {message.sender === "user" && (
-                <Avatar className="w-8 h-8 border-2 border-accent shrink-0">
-                   <AvatarFallback className="bg-accent text-accent-foreground">
-                    <User size={18} />
-                  </AvatarFallback>
-                </Avatar>
-              )}
-            </div>
-          ))}
-          {/* Jab AI response generate kar raha ho, toh "Thinking..." indicator dikhao. */}
-          {isPending && (
-             <div className="flex items-start gap-3 animate-in fade-in duration-300">
-               <Avatar className="w-8 h-8 border-2 border-primary shrink-0">
-                 <AvatarFallback className="bg-primary text-primary-foreground">
-                   <Bot size={18} />
-                 </AvatarFallback>
-               </Avatar>
-               <div className="bg-muted rounded-xl p-3 shadow-sm flex items-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                  <span className="text-muted-foreground italic">{uiContent[language].thinking}</span>
+            ))}
+            {/* Jab AI response generate kar raha ho, toh "Thinking..." indicator dikhao. */}
+            {isPending && (
+               <div className="flex items-start gap-3 animate-in fade-in duration-300">
+                 <Avatar className="w-8 h-8 border-2 border-primary shrink-0">
+                   <AvatarFallback className="bg-primary text-primary-foreground">
+                     <Bot size={18} />
+                   </AvatarFallback>
+                 </Avatar>
+                 <div className="bg-muted rounded-xl p-3 shadow-sm flex items-center space-x-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    <span className="text-muted-foreground italic">{uiContent[language].thinking}</span>
+                 </div>
                </div>
-             </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      </ScrollArea>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Input area, jahan user type karta hai */}
       <div className="p-4 bg-card border-t">
