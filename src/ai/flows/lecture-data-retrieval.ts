@@ -12,7 +12,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 
 const LectureQueryInputSchema = z.object({
-  query: z.string().describe('The user query in English or Hindi about their lecture schedule.'),
+  query: z.string().describe('The user query in English or Hindi about their lecture schedule. This could be a new question or a response to a clarifying question from the assistant.'),
 });
 export type LectureQueryInput = z.infer<typeof LectureQueryInputSchema>;
 
@@ -49,15 +49,19 @@ const lectureDataPrompt = ai.definePrompt({
   \`\`\`
 
   **Instructions:**
-  1.  Analyze the user's query: \`{{{query}}}\`
-  2.  The query might be a direct question (e.g., "what are my lectures today?") or a response to your previous clarifying question (e.g., "Section A"). Treat both as part of an ongoing conversation.
-  3.  Examine the timetable data to find matching lectures. The query might mention a professor's name/initials (e.g., "Shashi mam", "MMP"), a course name, a course code, a day, or just ask for "today's lectures".
-  4.  **Handle Ambiguity:** If a query is ambiguous (e.g., "MMP mam's lecture" and she teaches multiple sections), you MUST ask a clarifying question. For example: "Mrs. Mamta M. Panda teaches lectures for both Section A and B. Which section's schedule would you like to see?".
-  5.  **Formulate a Response:**
-      *   If the user's query provides enough information (either initially or as a follow-up) to find a specific schedule, populate the \`schedule\` array with the lecture details and provide a friendly confirmation in the \`response\` field. For example: "Sure, here is the schedule for Section A on Monday."
+  1.  Analyze the user's query: \`{{{query}}}\`. **This query might be a direct question (e.g., "what are my lectures today?") or a response to YOUR previous clarifying question (e.g., "Section A"). You must treat it as part of an ongoing conversation.**
+  2.  Examine the timetable data to find matching lectures. The query might mention a professor's name/initials (e.g., "Shashi mam", "MMP"), a course name, a course code, a day, or just ask for "today's lectures".
+  3.  **Handle Ambiguity and Conversation Context:** If a query is ambiguous (e.g., "MCA-3003 lecture" which is taught to both sections A and B), you MUST ask a clarifying question.
+      *   **Example Conversation:**
+          *   User: "MCA-3003 lecture"
+          *   You: "The lecture for MCA-3003 is held for both Section A and B. Which section's schedule would you like to see?"
+          *   User: "Section A"
+          *   You: (Now you have the context "MCA-3003" and "Section A". You should look up the schedule for MCA-3003 for Section A and provide it.) "Sure, here is the schedule for MCA-3003 for Section A."
+  4.  **Formulate a Response:**
+      *   If the user's query provides enough information (either initially or as a follow-up) to find a specific schedule, populate the \`schedule\` array with all matching lecture details and provide a friendly confirmation in the \`response\` field. For example: "Sure, here is the schedule for Section A for MCA-3003."
       *   If you still need clarification, provide ONLY the clarifying question in the \`response\` field and leave the \`schedule\` array empty.
       *   If you cannot find any relevant lectures, respond politely in the \`response\` field, stating that you couldn't find the information. For example: "I couldn't find any lectures matching your request."
-  6.  Your primary function is to query the data. Do not make up information. Base all schedule responses strictly on the JSON data provided.
+  5.  Your primary function is to query the data. Do not make up information. Base all schedule responses strictly on the JSON data provided.
   `,
 });
 
