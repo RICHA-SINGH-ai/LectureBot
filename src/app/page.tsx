@@ -28,7 +28,7 @@ export default function Home() {
       <div className="w-full max-w-2xl h-[95vh] sm:h-[90vh] flex flex-col shadow-2xl rounded-lg bg-background gradient-border-bg">
         <header className="flex items-center justify-between gap-4 p-4 border-b bg-card rounded-t-lg">
           <div className="flex items-center gap-4">
-            <div className="relative p-2 rounded-full text-primary-foreground">
+            <div className="relative p-2 rounded-full">
               <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent rounded-full -z-10 animate-pulse-slow"></div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,14 +37,20 @@ export default function Home() {
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className="w-8 h-8 text-primary-foreground"
               >
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                <path d="m10 7-2 5 2 5"></path>
-                <path d="m14 7 2 5-2 5"></path>
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path d="M22 12v6" />
+                <path d="M17.8 21.2c-1-.4-1.8-.8-2.3-1.1" />
+                <path d="M12 22v-6" />
+                <path d="M6.2 21.2c1-.4 1.8-.8 2.3-1.1" />
+                <path d="M2 12v6" />
               </svg>
             </div>
             <div>
