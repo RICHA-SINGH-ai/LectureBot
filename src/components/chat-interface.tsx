@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { ScheduleDisplay } from "./schedule-display";
 import { Badge } from "./ui/badge";
 import type { Language } from "@/app/page";
+import { NotificationReminder } from "./notification-reminder";
 
 const chatFormSchema = z.object({
   query: z.string().min(1, { message: "Message cannot be empty." }),
@@ -130,6 +131,7 @@ export default function ChatInterface({ language }: { language: Language }) {
   
   return (
     <div className="flex flex-col flex-1 bg-card rounded-b-lg overflow-hidden">
+      <NotificationReminder />
       <ScrollArea className="flex-1 p-4">
         <div className="space-y-6">
           {messages.map((message) => (
