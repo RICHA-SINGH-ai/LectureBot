@@ -11,9 +11,7 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <html lang="en" suppressHydrationWarning>
-        {children}
-      </html>
+      {children}
     </ThemeProvider>
   );
 }
