@@ -41,7 +41,7 @@ const lectureDataPrompt = ai.definePrompt({
   output: { schema: LectureQueryOutputSchema },
   prompt: `You are a helpful college assistant chatbot. Your task is to answer student queries about their lecture schedule based on a provided JSON dataset. You must handle queries in both English and Hindi.
 
-  **Today is ${new Date().toLocaleString('en-US', { weekday: 'long' })}.**
+  **Crucial Information: Today is ${new Date().toLocaleString('en-US', { weekday: 'long' })}.** When a user asks for "today's schedule", "aaj ka lecture", or any similar phrase, you MUST use this information and not ask them for the day.
 
   **Timetable Data:**
   \`\`\`json
