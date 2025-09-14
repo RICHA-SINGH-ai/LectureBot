@@ -57,3 +57,4 @@ The project is organized into logical directories to separate concerns.
 ├── tailwind.config.ts      # Configuration for Tailwind CSS.
 └── README.md               # This file.
 ```
+# LectureBot
